@@ -15,7 +15,7 @@ export function CheckoutPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:3001/api/create-checkout-session', {
+      const response = await fetch(' https://project-4-ops4.onrender.com/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
