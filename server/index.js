@@ -14,6 +14,7 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
@@ -96,8 +97,8 @@ let transporter;
 async function createTestAccount() {
   try {
     const testAccount = await nodemailer.createTestAccount();
-    
-    transporter = nodemailer.createTransporter({
+
+    transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
       secure: false,
@@ -124,7 +125,7 @@ app.get('/api/products', (req, res) => {
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
     const { items } = req.body;
-
+    console.log("item",items);
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'No items provided' });
     }
@@ -174,7 +175,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    
+
     // Log the transaction
     const transaction = {
       id: session.id,
@@ -184,7 +185,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       items: JSON.parse(session.metadata.orderData || '[]'),
       timestamp: new Date().toISOString(),
     };
-    
+
     transactionLogs.push(transaction);
     console.log('Transaction logged:', transaction);
 
